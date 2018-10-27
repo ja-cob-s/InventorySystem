@@ -12,11 +12,12 @@ import java.util.ArrayList;
  * @author jnsch
  */
 public class Inventory {
-    private ArrayList<Product> products = new ArrayList<Product>();
-    private ArrayList<Part> allParts = new ArrayList<Part>();
+    private ArrayList<Product> products;
+    private ArrayList<Part> allParts;
     
     Inventory() {
-        // ***TO-DO: Complete constructor***
+        products = new ArrayList<Product>();
+        allParts = new ArrayList<Part>();
     }
     
     public void addProduct(Product selectedProduct) {
@@ -24,8 +25,7 @@ public class Inventory {
     }
     
     public boolean removeProduct(int productIndex) {
-        products.remove(productIndex);
-        // ***TO-DO: Not sure what to return here***
+        return products.remove(products.get(productIndex));
     }
     
     public Product lookupProduct(int productIndex) {

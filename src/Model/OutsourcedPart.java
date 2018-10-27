@@ -13,7 +13,13 @@ public class OutsourcedPart extends Part {
     private String companyName;
 
     OutsourcedPart() {
-        // ***TO-DO: Complete constructor***
+        super();
+        this.setCompanyName("");
+    }
+    
+    OutsourcedPart(int partID, String name, double price, int inStock, int min, int max, String companyName) {
+        super(partID, name, price, inStock, min, max);
+        this.setCompanyName(companyName);
     }
     
     public void setCompanyName(String companyName) {

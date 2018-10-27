@@ -18,7 +18,21 @@ abstract class Part {
     private int max;
     
     Part() {
-        // ***TO-DO: Complete constructor***
+        this.setPartID(0);
+        this.setName("");
+        this.setPrice(0.00);
+        this.setInStock(0);
+        this.setMin(0);
+        this.setMax(0);
+    }
+    
+    Part(int partID, String name, double price, int inStock, int min, int max) {
+        this.setPartID(partID);
+        this.setName(name);
+        this.setPrice(price);
+        this.setInStock(inStock);
+        this.setMin(min);
+        this.setMax(max);
     }
     
     public void setName(String name) {

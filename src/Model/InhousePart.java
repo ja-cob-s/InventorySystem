@@ -13,7 +13,13 @@ public class InhousePart extends Part {
     private int machineID;
     
     InhousePart() {
-        // ***TO-DO: Complete constructor***
+        super();
+        this.setMachineID(0);
+    }
+    
+    InhousePart(int partID, String name, double price, int inStock, int min, int max, int machineID) {
+        super(partID, name, price, inStock, min, max);
+        this.setMachineID(machineID);
     }
     
     public void setMachineID(int machineID) {

@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * @author jnsch
  */
 public class Product {
-    private ArrayList<Part> associatedParts = new ArrayList<Part>();
+    private ArrayList<Part> associatedParts;
     private int productID;
     private String name;
     private double price;
@@ -21,7 +21,23 @@ public class Product {
     private int max;
     
     Product() {
-        // ***TO-DO: complete constructor***
+        associatedParts = new ArrayList<Part>();
+        this.setProductID(0);
+        this.setName("");
+        this.setPrice(0.00);
+        this.setInStock(0);
+        this.setMin(0);
+        this.setMax(0);
+    }
+    
+    Product(ArrayList<Part> associatedParts, int productID, String name, double price, int inStock, int min, int max) {
+        this.associatedParts = new ArrayList<Part>(associatedParts);
+        this.setProductID(productID);
+        this.setName(name);
+        this.setPrice(price);
+        this.setInStock(inStock);
+        this.setMin(min);
+        this.setMax(max);
     }
     
     public void setName(String name) {
@@ -69,8 +85,7 @@ public class Product {
     }
     
     public boolean removeAssociatedPart(int partIndex) {
-        associatedParts.remove(partIndex);
-        // ***TO-DO: Not sure what to return here ***
+        return associatedParts.remove(associatedParts.get(partIndex));
     }
     
     public Part lookupAssociatedPart(int partIndex) {
