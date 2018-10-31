@@ -12,13 +12,13 @@ package Model;
 public class OutsourcedPart extends Part {
     private String companyName;
 
-    OutsourcedPart() {
+    public OutsourcedPart() {
         super();
-        this.setCompanyName("");
+        this.setCompanyName("New Company");
     }
     
-    OutsourcedPart(int partID, String name, double price, int inStock, int min, int max, String companyName) {
-        super(partID, name, price, inStock, min, max);
+    public OutsourcedPart(String name, double price, int inStock, int min, int max, String companyName) {
+        super(name, price, inStock, min, max);
         this.setCompanyName(companyName);
     }
     

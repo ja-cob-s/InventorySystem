@@ -9,7 +9,7 @@ package Model;
  *
  * @author jnsch
  */
-abstract class Part {
+public abstract class Part {
     private int partID;
     private String name;
     private double price;
@@ -17,17 +17,17 @@ abstract class Part {
     private int min;
     private int max;
     
-    Part() {
-        this.setPartID(0);
-        this.setName("");
+    public Part() {
+        this.setPartID(Inventory.allParts.size() + 1);
+        this.setName("New Part");
         this.setPrice(0.00);
         this.setInStock(0);
         this.setMin(0);
         this.setMax(0);
     }
     
-    Part(int partID, String name, double price, int inStock, int min, int max) {
-        this.setPartID(partID);
+    public Part(String name, double price, int inStock, int min, int max) {
+        this.setPartID(Inventory.allParts.size() + 1);
         this.setName(name);
         this.setPrice(price);
         this.setInStock(inStock);

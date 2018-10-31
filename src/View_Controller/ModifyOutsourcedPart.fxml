@@ -7,12 +7,11 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane id="AnchorPane" fx:id="addPartScreenAnchor" prefHeight="550.0" prefWidth="450.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171" fx:controller="View_Controller.AddPartController">
+<AnchorPane id="AnchorPane" fx:id="modifyOutsourcedPartScreenAnchor" prefHeight="550.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View_Controller.ModifyOutsourcedPartController">
    <children>
-      <AnchorPane fx:id="addPartAnchor" layoutX="12.0" layoutY="12.0" prefHeight="525.0" prefWidth="425.0" style="-fx-border-color: black; -fx-border-radius: 10;">
+      <AnchorPane fx:id="modifyOutsourcedPartAnchor" layoutX="12.0" layoutY="12.0" prefHeight="525.0" prefWidth="425.0" style="-fx-border-color: black; -fx-border-radius: 10;">
          <children>
-            <Label fx:id="addPartLabel" layoutX="24.0" layoutY="30.0" text="Add Part" textFill="#445570">
+            <Label fx:id="modifyOutsourcedPartLabel" layoutX="24.0" layoutY="30.0" text="Modify Part" textFill="#445570">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
@@ -52,7 +51,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="IDField" disable="true" editable="false" layoutX="160.0" layoutY="90.0" prefWidth="140.0" promptText="Auto Gen - Disabled">
+            <TextField fx:id="IDField" disable="true" editable="false" layoutX="160.0" layoutY="90.0" prefWidth="140.0">
                <font>
                   <Font name="System Italic" size="12.0" />
                </font>
@@ -94,7 +93,7 @@
                   <Font size="14.0" />
                </font>
             </RadioButton>
-            <RadioButton fx:id="outsourcedRadio" layoutX="250.0" layoutY="35.0" mnemonicParsing="false" onAction="#outsourcedRadioHandler" text="Outsourced">
+            <RadioButton fx:id="outsourcedRadio" layoutX="250.0" layoutY="35.0" mnemonicParsing="false" onAction="#outsourcedRadioHandler" selected="true" text="Outsourced">
                <font>
                   <Font size="14.0" />
                </font>

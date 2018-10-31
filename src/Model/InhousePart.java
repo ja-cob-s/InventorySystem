@@ -12,13 +12,13 @@ package Model;
 public class InhousePart extends Part {
     private int machineID;
     
-    InhousePart() {
+    public InhousePart() {
         super();
         this.setMachineID(0);
     }
     
-    InhousePart(int partID, String name, double price, int inStock, int min, int max, int machineID) {
-        super(partID, name, price, inStock, min, max);
+    public InhousePart(String name, double price, int inStock, int min, int max, int machineID) {
+        super(name, price, inStock, min, max);
         this.setMachineID(machineID);
     }
     
