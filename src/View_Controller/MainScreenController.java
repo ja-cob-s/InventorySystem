@@ -13,6 +13,7 @@ import Model.Product;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,7 +21,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -129,7 +133,20 @@ public class MainScreenController implements Initializable {
 
     @FXML
     private void exitButtonHandler(ActionEvent event) {
-        System.exit(0); // Terminates the application when the exit button is pressed
+        /*Terminates the application when the exit button is pressed
+          Displays confirmation dialog first*/
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText("Are you sure you want to exit?");
+        
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            // ... user chose OK
+            System.exit(0); 
+        } else {
+            // ... user chose CANCEL or closed the dialog
+        }        
     }
 
     @FXML
@@ -140,9 +157,23 @@ public class MainScreenController implements Initializable {
     @FXML
     private void partsDeleteButtonHandler(ActionEvent event) {
         /*Deletes the selected part when partsDeleteButton pressed
-          Only if a part is selected*/
-        //Part part = partsTable.getSelectionModel().getSelectedItem();
-        //inv.deletePart(part.getPartID());
+          Only if a part is selected
+          Displays confirmation dialog first*/
+        if (partsTable.getSelectionModel().getSelectedItem() != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Are you sure you want to delete this part?");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK){
+                // ... user chose OK
+                Part part = partsTable.getSelectionModel().getSelectedItem();
+                inv.deletePart(part);
+            } else {
+                // ... user chose CANCEL or closed the dialog
+            }    
+        }
     }
 
     @FXML
@@ -201,10 +232,22 @@ public class MainScreenController implements Initializable {
     @FXML
     private void productsDeleteButtonHandler(ActionEvent event) {
         /*Deletes the selected product when productsDeleteButton pressed
-          Only if a Product is selected*/
+          Only if a Product is selected
+          Displays confirmation dialog first*/
         if (productsTable.getSelectionModel().getSelectedItem() != null) {
-            Product product = productsTable.getSelectionModel().getSelectedItem();
-            inv.removeProduct(product.getProductID() - 1);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Are you sure you want to delete this product?");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK){
+                // ... user chose OK
+                Product product = productsTable.getSelectionModel().getSelectedItem();
+                inv.removeProduct(inv.products.indexOf(product));
+            } else {
+                // ... user chose CANCEL or closed the dialog
+            }    
         }
     }
 

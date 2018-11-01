@@ -22,7 +22,7 @@ public class Product {
     
     public Product() {
         associatedParts = new ArrayList<Part>();
-        this.setProductID(Inventory.products.size() + 1);
+        this.setProductID(Inventory.productsCnt+1);
         this.setName("New Product");
         this.setPrice(0.00);
         this.setInStock(0);
@@ -30,9 +30,9 @@ public class Product {
         this.setMax(0);
     }
     
-    public Product(ArrayList<Part> associatedParts, String name, double price, int inStock, int min, int max) {
+    public Product(ArrayList<Part> associatedParts, int productID, String name, double price, int inStock, int min, int max) {
         this.associatedParts = new ArrayList<Part>(associatedParts);
-        this.setProductID(Inventory.products.size() + 1);
+        this.setProductID(productID);
         this.setName(name);
         this.setPrice(price);
         this.setInStock(inStock);
