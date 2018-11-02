@@ -61,7 +61,7 @@
                   <Font name="System Italic" size="12.0" />
                </font>
             </TextField>
-            <TextField fx:id="invField" layoutX="160.0" layoutY="210.0" prefWidth="140.0" promptText="Inv">
+            <TextField fx:id="invField" layoutX="160.0" layoutY="210.0" prefWidth="140.0" promptText="Inv" text="0">
                <font>
                   <Font name="System Italic" size="12.0" />
                </font>

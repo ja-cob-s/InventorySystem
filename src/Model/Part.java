@@ -16,23 +16,26 @@ public abstract class Part {
     private int inStock;
     private int min;
     private int max;
+    private Inventory inv;
     
     public Part() {
-        this.setPartID(Inventory.partsCnt+1);
-        this.setName("New Part");
-        this.setPrice(0.00);
-        this.setInStock(0);
-        this.setMin(0);
-        this.setMax(0);
+        this.inv = new Inventory();
+        this.partID = inv.getPartsCnt() + 1;
+        this.name = "New Part";
+        this.price = 0.00;
+        this.inStock = 0;
+        this.min = 0;
+        this.max = 0;
     }
     
     public Part(int partID, String name, double price, int inStock, int min, int max) {
-        this.setPartID(partID);
-        this.setName(name);
-        this.setPrice(price);
-        this.setInStock(inStock);
-        this.setMin(min);
-        this.setMax(max);
+        this.inv = new Inventory();
+        this.partID = partID;
+        this.name = name;
+        this.price = price;
+        this.inStock = inStock;
+        this.min = min;
+        this.max = max;
     }
     
     public void setName(String name) {

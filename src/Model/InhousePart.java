@@ -14,12 +14,12 @@ public class InhousePart extends Part {
     
     public InhousePart() {
         super();
-        this.setMachineID(0);
+        this.machineID = 0;
     }
     
     public InhousePart(int partID, String name, double price, int inStock, int min, int max, int machineID) {
         super(partID, name, price, inStock, min, max);
-        this.setMachineID(machineID);
+        this.machineID = machineID;
     }
     
     public void setMachineID(int machineID) {

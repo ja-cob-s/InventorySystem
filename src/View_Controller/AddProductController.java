@@ -13,6 +13,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,6 +29,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -68,25 +71,25 @@ public class AddProductController implements Initializable {
     @FXML
     private TextField minField;
     @FXML
-    private TableView<?> partTable1;
+    private TableView<Part> partTable1; //Lists all parts
     @FXML
-    private TableColumn<?, ?> partIDColumn1;
+    private TableColumn<Part, Integer> partIDColumn1;
     @FXML
-    private TableColumn<?, ?> partNameColumn1;
+    private TableColumn<Part, String> partNameColumn1;
     @FXML
-    private TableColumn<?, ?> inventoryLevelColumn1;
+    private TableColumn<Part, Integer> inventoryLevelColumn1;
     @FXML
-    private TableColumn<?, ?> priceColumn1;
+    private TableColumn<Part, Double> priceColumn1;
     @FXML
-    private TableView<?> partTable2;
+    private TableView<Part> partTable2; //Lists only parts associated with selected product
     @FXML
-    private TableColumn<?, ?> partIDColumn2;
+    private TableColumn<Part, Integer> partIDColumn2;
     @FXML
-    private TableColumn<?, ?> partNameColumn2;
+    private TableColumn<Part, String> partNameColumn2;
     @FXML
-    private TableColumn<?, ?> inventoryLevelColumn2;
+    private TableColumn<Part, Integer> inventoryLevelColumn2;
     @FXML
-    private TableColumn<?, ?> priceColumn2;
+    private TableColumn<Part, Double> priceColumn2;
     @FXML
     private Button searchButton;
     @FXML
@@ -99,69 +102,77 @@ public class AddProductController implements Initializable {
     private Button saveButton;
     @FXML
     private TextField searchField;
+        
+    private ObservableList<Part> associatedParts = FXCollections.observableArrayList();
     private boolean validInput;
+    private Inventory inv;
+    private ScreenHelper helper;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        inv = new Inventory();
+        helper = new ScreenHelper();
+        
         //Presets ProductID
-        IDField.setText(Integer.toString(Inventory.productsCnt + 1));
+        IDField.setText(Integer.toString(inv.getProductsCnt() + 1));
+        
+        //Populates parts tables
+        populatePartTable1(); //Table of all parts
+        populatePartTable2(); //Table of associated parts
     }    
+    
+    public void populatePartTable1() {
+        partIDColumn1.setCellValueFactory(new PropertyValueFactory<>("partID"));
+        partNameColumn1.setCellValueFactory(new PropertyValueFactory<>("name"));
+        inventoryLevelColumn1.setCellValueFactory(new PropertyValueFactory<>("inStock"));
+        priceColumn1.setCellValueFactory(new PropertyValueFactory<>("price"));
+        partTable1.setItems(inv.getAllParts());
+    }
+    
+    public void populatePartTable2() {
+        partIDColumn2.setCellValueFactory(new PropertyValueFactory<>("partID"));
+        partNameColumn2.setCellValueFactory(new PropertyValueFactory<>("name"));
+        inventoryLevelColumn2.setCellValueFactory(new PropertyValueFactory<>("inStock"));
+        priceColumn2.setCellValueFactory(new PropertyValueFactory<>("price"));
+        partTable2.setItems(associatedParts);
+    }
 
     @FXML
     private void searchButtonHandler(ActionEvent event) {
-        //Searches for part based on user input
+        //Searches the table of all parts
     }
 
     @FXML
     private void addButtonHandler(ActionEvent event) {
-        //Adds selected part
+        //Adds the selected part to the product
+        if (partTable1.getSelectionModel().getSelectedItem() != null) {
+            associatedParts.add(partTable1.getSelectionModel().getSelectedItem());
+            populatePartTable2();
+        }
     }
 
     @FXML
     private void deleteButtonHandler(ActionEvent event) {
         /*Removes selected part
           Displays confirmation dialog first*/
-        Alert alert = new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText(null);
-        alert.setContentText("Are you sure you want to delete this part?");
-        
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
+        if (helper.showConfirmationDialog("Are you sure you want to delete this part?")){
             // ... user chose OK
-        } else {
-           // ... user chose CANCEL or closed the dialog
-        }
+            associatedParts.remove(partTable2.getSelectionModel().getSelectedItem());
+        } 
     }
 
     @FXML
     private void cancelButtonHandler(ActionEvent event) throws IOException {
         //Switches to main screen and discards changes when cancelButton pressed
         //Displays confirmation dialog first
-        Alert alert = new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText(null);
-        alert.setContentText("Are you sure you want to discard changes?");
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
+        if (helper.showConfirmationDialog("Are you sure you want to discard changes?")) {
             // ... user chose OK
-            Stage stage; 
-            Parent root;       
-            stage=(Stage) cancelButton.getScene().getWindow();
-            //load up OTHER FXML document
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                   "MainScreen.fxml"));
-            root = loader.load();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } else {
-           // ... user chose CANCEL or closed the dialog
-        }       
+            Stage stage = (Stage) cancelButton.getScene().getWindow(); 
+            helper.nextScreenHandler(stage, "MainScreen.fxml");
+        }  
     }
 
     @FXML
@@ -175,71 +186,61 @@ public class AddProductController implements Initializable {
         int inStock = getInStock();
         int min = getMin();
         int max = getMax();
+        checkInvLevels(inStock, max, min);
                                                
         if (validInput) {
             Product product = new Product(associatedParts, productID, name, price, inStock, min, max);
-            Inventory.products.add(product);
+            inv.addProduct(product);
             
-            Stage stage; 
-            Parent root;       
-            stage=(Stage) cancelButton.getScene().getWindow();
-            //load up OTHER FXML document
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                   "MainScreen.fxml"));
-            root = loader.load();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+            Stage stage = (Stage) saveButton.getScene().getWindow();
+            helper.nextScreenHandler(stage, "MainScreen.fxml");
         }
-    }
-    
-    public void IOExceptionHandler(String s) {
-        Alert alert = new Alert(AlertType.WARNING);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText("Invalid input type in " + s);
-        alert.showAndWait();
-
-        System.out.println("Invalid input type in " + s); 
-        validInput = false;
     }
     
     public int getProductID() {
         int productID = 0;
         try { productID = Integer.parseInt(IDField.getText()); }
-        catch(Exception e) { IOExceptionHandler("Product ID field"); }
+        catch(Exception e) { validInput = helper.IOExceptionHandler("Product ID field"); }
         return productID;
     }
     
     public String getName() {
+        //Displays a warning dialog if field is empty
+        validInput = helper.emptyStringHandler(nameField.getText(), "Name field");
         return nameField.getText();
     }    
     
     public int getInStock() {
         int inStock = 0;
         try { inStock = Integer.parseInt(invField.getText()); }
-        catch(Exception e) { IOExceptionHandler("Inv field"); }
+        catch(Exception e) { validInput = helper.IOExceptionHandler("Inv field"); }
         return inStock;
     }
     
     public double getPrice() {
         double price = 0.0;
         try { price = Double.parseDouble(priceField.getText()); }
-        catch(Exception e) { IOExceptionHandler("Price field"); }
+        catch(Exception e) { validInput = helper.IOExceptionHandler("Price field"); }
         return price;
     }
     
     public int getMax() {
         int max = 0;
         try { max = Integer.parseInt(maxField.getText()); }
-        catch(Exception e) { IOExceptionHandler("Max field"); }
+        catch(Exception e) { validInput = helper.IOExceptionHandler("Max field"); }
         return max;
     }
     
     public int getMin() {
         int min = 0;
         try { min = Integer.parseInt(minField.getText()); }
-        catch(Exception e) { IOExceptionHandler("Min field"); }
+        catch(Exception e) { validInput = helper.IOExceptionHandler("Min field"); }
         return min;
+    }
+    
+    public void checkInvLevels(int inStock, int max, int min) {
+        boolean tmp;
+        tmp = helper.invLevelsHandler(inStock, max, min);
+        if (!tmp) { validInput = false; }
     }
 }

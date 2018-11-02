@@ -78,15 +78,17 @@ public class ModifyOutsourcedPartController implements Initializable {
     
     private boolean validInput;
     private OutsourcedPart part;
+    private ScreenHelper helper;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        helper = new ScreenHelper();
+        
         // Sets togglegroup for radio buttons
         ToggleGroup toggleGroup = new ToggleGroup();
-
         inHouseRadio.setToggleGroup(toggleGroup);
         outsourcedRadio.setToggleGroup(toggleGroup);
     }    
@@ -95,27 +97,11 @@ public class ModifyOutsourcedPartController implements Initializable {
     private void cancelButtonHandler(ActionEvent event) throws IOException {
         //Switches to main screen and discards changes when cancelButton pressed
         //Displays confirmation dialog first
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText(null);
-        alert.setContentText("Are you sure you want to discard changes?");
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
+        if (helper.showConfirmationDialog("Are you sure you want to discard changes?")){
             // ... user chose OK
-            Stage stage; 
-            Parent root;       
-            stage=(Stage) cancelButton.getScene().getWindow();
-            //load up OTHER FXML document
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                   "MainScreen.fxml"));
-            root = loader.load();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } else {
-           // ... user chose CANCEL or closed the dialog
-        }       
+            Stage stage = (Stage) cancelButton.getScene().getWindow();
+            helper.nextScreenHandler(stage, "MainScreen.fxml");
+        }  
     }
 
     @FXML
@@ -128,6 +114,7 @@ public class ModifyOutsourcedPartController implements Initializable {
         int max = getMax();
         int min = getMin();
         String companyName = getCompanyName();
+        checkInvLevels(inStock, max, min);
         
         if (validInput) {
             part.setName(name);
@@ -136,32 +123,17 @@ public class ModifyOutsourcedPartController implements Initializable {
             part.setMax(max);
             part.setMin(min);
             part.setCompanyName(companyName);
-            Stage stage; 
-            Parent root;       
-            stage=(Stage) cancelButton.getScene().getWindow();
-            //load up OTHER FXML document
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                   "MainScreen.fxml"));
-            root = loader.load();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+            
+            Stage stage = (Stage) saveButton.getScene().getWindow();
+            helper.nextScreenHandler(stage, "MainScreen.fxml");
         }
     }
 
     @FXML
     private void inHouseRadioHandler(ActionEvent event) throws IOException {
         //Switches to modifyInhousePart screen
-        Stage stage; 
-        Parent root;       
-        stage=(Stage) inHouseRadio.getScene().getWindow();
-        //load up OTHER FXML document
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(
-               "ModifyInhousePart.fxml"));
-        root = loader.load();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        Stage stage = (Stage) inHouseRadio.getScene().getWindow();
+        helper.nextScreenHandler(stage, "ModifyInhousePart.fxml");
     }
 
     @FXML
@@ -181,51 +153,49 @@ public class ModifyOutsourcedPartController implements Initializable {
         companyNameField.setText(part.getCompanyName());
     }
     
-    public void IOExceptionHandler(String s) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText("Invalid input type in " + s);
-        alert.showAndWait();
-
-        System.out.println("Invalid input type in " + s); 
-        validInput = false;
-    }
-    
     public String getName() {
+        //Displays a warning dialog if field is empty
+        validInput = helper.emptyStringHandler(nameField.getText(), "Name field");
         return nameField.getText();
     }    
     
     public int getInStock() {
         int inStock = 0;
         try { inStock = Integer.parseInt(invField.getText()); }
-        catch(Exception e) { IOExceptionHandler("Inv field"); }
+        catch(Exception e) { validInput = helper.IOExceptionHandler("Inv field"); }
         return inStock;
     }
     
     public double getPrice() {
         double price = 0.0;
         try { price = Double.parseDouble(priceField.getText()); }
-        catch(Exception e) { IOExceptionHandler("Price field"); }
+        catch(Exception e) { validInput = helper.IOExceptionHandler("Price field"); }
         return price;
     }
     
     public int getMax() {
         int max = 0;
         try { max = Integer.parseInt(maxField.getText()); }
-        catch(Exception e) { IOExceptionHandler("Max field"); }
+        catch(Exception e) { validInput = helper.IOExceptionHandler("Max field"); }
         return max;
     }
     
     public int getMin() {
         int min = 0;
         try { min = Integer.parseInt(minField.getText()); }
-        catch(Exception e) { IOExceptionHandler("Min field"); }
+        catch(Exception e) { validInput = helper.IOExceptionHandler("Min field"); }
         return min;
     }
     
     public String getCompanyName() {
+        //Displays a warning dialog if field is empty
+        validInput = helper.emptyStringHandler(nameField.getText(), "Name field");
         return companyNameField.getText();
     }    
     
+    public void checkInvLevels(int inStock, int max, int min) {
+        boolean tmp;
+        tmp = helper.invLevelsHandler(inStock, max, min);
+        if (!tmp) { validInput = false; }
+    }    
 }

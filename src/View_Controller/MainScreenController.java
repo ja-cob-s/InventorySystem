@@ -97,13 +97,17 @@ public class MainScreenController implements Initializable {
     
     static boolean entered;
     private Inventory inv;
+    private ScreenHelper helper;
 
     /**
      * Initializes the controller class.
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         inv = new Inventory();
+        helper = new ScreenHelper();
             
         if(!entered) {
             inv.addProduct(new Product());
@@ -120,14 +124,14 @@ public class MainScreenController implements Initializable {
         partsInventoryLevelColumn.setCellValueFactory(new PropertyValueFactory<>("inStock"));
         partsPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
         
-        partsTable.setItems(inv.allParts);
+        partsTable.setItems(inv.getAllParts());
         
         productIDColumn.setCellValueFactory(new PropertyValueFactory<>("productID"));
         productNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         productsInventoryLevelColumn.setCellValueFactory(new PropertyValueFactory<>("inStock"));
         productsPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
         
-        productsTable.setItems(inv.products);
+        productsTable.setItems(inv.getProducts());
         
     }    
 
@@ -135,18 +139,10 @@ public class MainScreenController implements Initializable {
     private void exitButtonHandler(ActionEvent event) {
         /*Terminates the application when the exit button is pressed
           Displays confirmation dialog first*/
-        Alert alert = new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText(null);
-        alert.setContentText("Are you sure you want to exit?");
-        
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
+        if (helper.showConfirmationDialog("Are you sure you want to exit?")){
             // ... user chose OK
             System.exit(0); 
-        } else {
-            // ... user chose CANCEL or closed the dialog
-        }        
+        } 
     }
 
     @FXML
@@ -160,19 +156,11 @@ public class MainScreenController implements Initializable {
           Only if a part is selected
           Displays confirmation dialog first*/
         if (partsTable.getSelectionModel().getSelectedItem() != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation Dialog");
-            alert.setHeaderText(null);
-            alert.setContentText("Are you sure you want to delete this part?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
+            if (helper.showConfirmationDialog("Are you sure you want to delete this part?")){
                 // ... user chose OK
                 Part part = partsTable.getSelectionModel().getSelectedItem();
                 inv.deletePart(part);
-            } else {
-                // ... user chose CANCEL or closed the dialog
-            }    
+            }
         }
     }
 
@@ -182,46 +170,30 @@ public class MainScreenController implements Initializable {
           Only if a part is selected
           Passes selected Part object to next screen*/
         if (partsTable.getSelectionModel().getSelectedItem() != null) {
-            Stage stage; 
-            Parent root;       
-            stage=(Stage) partsModifyButton.getScene().getWindow();
-            
             Object part = partsTable.getSelectionModel().getSelectedItem();
-            //load up OTHER FXML document
-            FXMLLoader inhouseLoader = new FXMLLoader(getClass().getResource(
-                   "ModifyInhousePart.fxml"));
-            FXMLLoader outsourcedLoader = new FXMLLoader(getClass().getResource(
-                   "ModifyOutsourcedPart.fxml"));
+            
+            Stage stage = (Stage) partsModifyButton.getScene().getWindow();
+
             if (partsTable.getSelectionModel().getSelectedItem() instanceof InhousePart) {
-                root = inhouseLoader.load();
-                ModifyInhousePartController controller = inhouseLoader.getController();
+                //Part is an Inhouse Part
+                ModifyInhousePartController controller = 
+                        (ModifyInhousePartController)helper.nextScreenControllerHandler(stage, "ModifyInhousePart.fxml");
                 controller.setPart((InhousePart)part);
             }
             else {
-                root = outsourcedLoader.load();
-                ModifyOutsourcedPartController controller = outsourcedLoader.getController();
+                //Part is an Outsourced Part
+                ModifyOutsourcedPartController controller = 
+                        (ModifyOutsourcedPartController)helper.nextScreenControllerHandler(stage, "ModifyOutsourcedPart.fxml");
                 controller.setPart((OutsourcedPart)part);
             }
-            
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
         }
     }
 
     @FXML
     private void partsAddButtonHandler(ActionEvent event) throws IOException {
         //Switches to AddPart screen when partsAddButton pressed
-        Stage stage; 
-        Parent root;       
-        stage=(Stage) partsAddButton.getScene().getWindow();
-        //load up OTHER FXML document
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(
-               "AddInhousePart.fxml"));
-        root = loader.load();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        Stage stage = (Stage) partsAddButton.getScene().getWindow(); 
+        helper.nextScreenHandler(stage, "AddInhousePart.fxml");
     }
 
     @FXML
@@ -235,16 +207,10 @@ public class MainScreenController implements Initializable {
           Only if a Product is selected
           Displays confirmation dialog first*/
         if (productsTable.getSelectionModel().getSelectedItem() != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation Dialog");
-            alert.setHeaderText(null);
-            alert.setContentText("Are you sure you want to delete this product?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
+            if (helper.showConfirmationDialog("Are you sure you want to delete this product?")){
                 // ... user chose OK
                 Product product = productsTable.getSelectionModel().getSelectedItem();
-                inv.removeProduct(inv.products.indexOf(product));
+                inv.removeProduct(inv.getProductIndex(product));
             } else {
                 // ... user chose CANCEL or closed the dialog
             }    
@@ -257,17 +223,9 @@ public class MainScreenController implements Initializable {
           Only if a Product is selected
           Passes selected Product object to next screen*/
         if (productsTable.getSelectionModel().getSelectedItem() != null) {
-            Stage stage; 
-            Parent root;       
-            stage=(Stage) productsModifyButton.getScene().getWindow();
-            //load up OTHER FXML document
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                   "ModifyProduct.fxml"));
-            root = loader.load();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-            ModifyProductController controller = loader.getController();
+            Stage stage = (Stage) productsModifyButton.getScene().getWindow();
+            ModifyProductController controller = 
+                    (ModifyProductController)helper.nextScreenControllerHandler(stage, "ModifyProduct.fxml");
             Product product = productsTable.getSelectionModel().getSelectedItem();
             controller.setProduct(product);
         }
@@ -276,16 +234,8 @@ public class MainScreenController implements Initializable {
     @FXML
     private void productsAddButtonHandler(ActionEvent event) throws IOException {
         //Switches to AddProduct screen when productsAddButton pressed
-        Stage stage; 
-        Parent root;       
-        stage=(Stage) productsAddButton.getScene().getWindow();
-        //load up OTHER FXML document
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(
-               "AddProduct.fxml"));
-        root = loader.load();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+        Stage stage = (Stage) productsAddButton.getScene().getWindow();
+        helper.nextScreenHandler(stage, "AddProduct.fxml");
     }
     
 }

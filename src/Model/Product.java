@@ -19,25 +19,28 @@ public class Product {
     private int inStock;
     private int min;
     private int max;
+    private Inventory inv;
     
     public Product() {
-        associatedParts = new ArrayList<Part>();
-        this.setProductID(Inventory.productsCnt+1);
-        this.setName("New Product");
-        this.setPrice(0.00);
-        this.setInStock(0);
-        this.setMin(0);
-        this.setMax(0);
+        this.inv = new Inventory();
+        this.associatedParts = new ArrayList<Part>();
+        this.productID = inv.getProductsCnt() + 1;
+        this.name = "New Product";
+        this.price = 0.00;
+        this.inStock = 0;
+        this.min = 0;
+        this.max = 0;
     }
     
     public Product(ArrayList<Part> associatedParts, int productID, String name, double price, int inStock, int min, int max) {
+        this.inv = new Inventory();
         this.associatedParts = new ArrayList<Part>(associatedParts);
-        this.setProductID(productID);
-        this.setName(name);
-        this.setPrice(price);
-        this.setInStock(inStock);
-        this.setMin(min);
-        this.setMax(max);
+        this.productID = productID;
+        this.name = name;
+        this.price = price;
+        this.inStock = inStock;
+        this.min = min;
+        this.max = max;
     }
     
     public void setName(String name) {
@@ -84,12 +87,22 @@ public class Product {
         associatedParts.add(selectedPart);
     }
     
-    public boolean removeAssociatedPart(int partIndex) {
-        return associatedParts.remove(associatedParts.get(partIndex));
+    public boolean removeAssociatedPart(int partID) {
+        for (int i = 0; i < associatedParts.size(); i++) {
+            if (associatedParts.get(i).getPartID() == partID) {
+                return associatedParts.remove(associatedParts.get(partID));
+            }
+        }
+        return false;
     }
     
-    public Part lookupAssociatedPart(int partIndex) {
-        return associatedParts.get(partIndex);
+    public Part lookupAssociatedPart(int partID) {
+        for (int i = 0; i < associatedParts.size(); i++) {
+            if (associatedParts.get(i).getPartID() == partID) {
+                return associatedParts.get(i);
+            }
+        }
+        return null;
     }
     
     public void setProductID(int productID) {
@@ -98,5 +111,9 @@ public class Product {
     
     public int getProductID() {
         return productID;
+    }
+    
+    public int getNumAssociatedParts() {
+        return associatedParts.size();
     }
 }

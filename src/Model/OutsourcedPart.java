@@ -14,12 +14,12 @@ public class OutsourcedPart extends Part {
 
     public OutsourcedPart() {
         super();
-        this.setCompanyName("New Company");
+        this.companyName = "New Company";
     }
     
     public OutsourcedPart(int partID, String name, double price, int inStock, int min, int max, String companyName) {
         super(partID, name, price, inStock, min, max);
-        this.setCompanyName(companyName);
+        this.companyName = companyName;
     }
     
     public void setCompanyName(String companyName) {
