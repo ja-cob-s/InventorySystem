@@ -156,7 +156,9 @@ public class ModifyInhousePartController implements Initializable {
     
     public String getName() {
         //Displays a warning dialog if field is empty
-        validInput = helper.emptyStringHandler(nameField.getText(), "Name field");
+        boolean tmp;
+        tmp = helper.emptyStringHandler(nameField.getText(), "Name field");
+        if (!tmp) { validInput = false; }
         return nameField.getText();
     }    
     

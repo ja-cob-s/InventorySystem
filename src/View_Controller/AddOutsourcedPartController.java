@@ -151,7 +151,9 @@ public class AddOutsourcedPartController implements Initializable {
     
     public String getName() {
         //Displays a warning dialog if field is empty
-        validInput = helper.emptyStringHandler(nameField.getText(), "Name field");
+        boolean tmp;
+        tmp = helper.emptyStringHandler(nameField.getText(), "Name field");
+        if (!tmp) { validInput = false; }
         return nameField.getText();
     }    
     
@@ -185,9 +187,11 @@ public class AddOutsourcedPartController implements Initializable {
     
     public String getCompanyName() {
         //Displays a warning dialog if field is empty
-        validInput = helper.emptyStringHandler(nameField.getText(), "Company Name field");
+        boolean tmp;
+        tmp = helper.emptyStringHandler(nameField.getText(), "Name field");
+        if (!tmp) { validInput = false; }
         return companyNameField.getText();
-    }    
+    }     
     
     public void checkInvLevels(int inStock, int max, int min) {
         boolean tmp;
