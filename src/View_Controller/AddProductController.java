@@ -10,22 +10,17 @@ import Model.Product;
 import Model.Part;
 import java.io.IOException;
 import java.net.URL;
+import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -104,7 +99,6 @@ public class AddProductController implements Initializable {
     private TextField searchField;
         
     private ObservableList<Part> associatedParts = FXCollections.observableArrayList();
-    private boolean validInput;
     private Inventory inv;
     private ScreenHelper helper;
 
@@ -120,29 +114,92 @@ public class AddProductController implements Initializable {
         IDField.setText(Integer.toString(inv.getProductsCnt() + 1));
         
         //Populates parts tables
-        populatePartTable1(); //Table of all parts
-        populatePartTable2(); //Table of associated parts
+        this.populatePartTable1(inv.getAllParts()); //Table of all parts
+        this.populatePartTable2(associatedParts); //Table of associated parts
     }    
     
-    public void populatePartTable1() {
+    public void populatePartTable1(ObservableList<Part> list) {
         partIDColumn1.setCellValueFactory(new PropertyValueFactory<>("partID"));
         partNameColumn1.setCellValueFactory(new PropertyValueFactory<>("name"));
         inventoryLevelColumn1.setCellValueFactory(new PropertyValueFactory<>("inStock"));
         priceColumn1.setCellValueFactory(new PropertyValueFactory<>("price"));
-        partTable1.setItems(inv.getAllParts());
+        
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+        priceColumn1.setCellFactory(tc -> new TableCell<Part, Double>() {
+            @Override
+            protected void updateItem(Double price, boolean empty) {
+                super.updateItem(price, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(currencyFormat.format(price));
+                }
+            }
+        });
+        
+        partTable1.setItems(list);
     }
     
-    public void populatePartTable2() {
+    public void populatePartTable2(ObservableList<Part> list) {
         partIDColumn2.setCellValueFactory(new PropertyValueFactory<>("partID"));
         partNameColumn2.setCellValueFactory(new PropertyValueFactory<>("name"));
         inventoryLevelColumn2.setCellValueFactory(new PropertyValueFactory<>("inStock"));
         priceColumn2.setCellValueFactory(new PropertyValueFactory<>("price"));
-        partTable2.setItems(associatedParts);
+        
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+        priceColumn2.setCellFactory(tc -> new TableCell<Part, Double>() {
+            @Override
+            protected void updateItem(Double price, boolean empty) {
+                super.updateItem(price, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(currencyFormat.format(price));
+                }
+            }
+        });
+        
+        partTable2.setItems(list);
     }
 
     @FXML
     private void searchButtonHandler(ActionEvent event) {
         //Searches the table of all parts
+        String searchItem = searchField.getText();
+        ObservableList<Part> filteredParts = FXCollections.observableArrayList();
+        boolean found = false;
+        try {
+            //Searches by ID number
+            int itemNum = Integer.parseInt(searchItem);
+            for (Part p: inv.getAllParts()) {
+                if (p.getPartID() == itemNum) {
+                    found = true;
+                    filteredParts.add(p);
+                    this.populatePartTable1(filteredParts);
+                }
+            }
+            if (found == false) {
+                helper.showWarningDialog("Part not found!");
+            }
+        }
+        catch(NumberFormatException e) {
+            //Displays full list if no search string
+            if (searchItem == null || searchItem.isEmpty()) {
+                this.populatePartTable1(inv.getAllParts());
+                found = true;
+            }
+            //Searches by Name
+            for (Part p: inv.getAllParts()) {
+                if (p.getName().equals(searchItem)) {
+                    found = true;
+                    filteredParts.add(p);
+                    this.populatePartTable1(filteredParts);
+                }
+            }
+            if (found == false) {
+                helper.showWarningDialog("Part not found!");
+            }            
+        }
     }
 
     @FXML
@@ -150,7 +207,7 @@ public class AddProductController implements Initializable {
         //Adds the selected part to the product
         if (partTable1.getSelectionModel().getSelectedItem() != null) {
             associatedParts.add(partTable1.getSelectionModel().getSelectedItem());
-            populatePartTable2();
+            this.populatePartTable2(associatedParts);
         }
     }
 
@@ -178,71 +235,22 @@ public class AddProductController implements Initializable {
     @FXML
     private void saveButtonHandler(ActionEvent event) throws IOException {
         //Adds the product to the inventory and returns to the main screen
-        validInput = true;
-        ArrayList<Part> associatedParts = new ArrayList<Part>(); //*****CHANGE THIS*****
-        String name = getName();
-        int productID = getProductID();
-        double price = getPrice();
-        int inStock = getInStock();
-        int min = getMin();
-        int max = getMax();
-        checkInvLevels(inStock, max, min);
+        helper.setValidInput(true);
+        ArrayList<Part> associatedParts = new ArrayList<Part>(); //*****--->CHANGE THIS<---*****
+        String name = helper.getString(nameField.getText(), "Name field");
+        int productID = helper.getInt(IDField.getText(), "Product ID field");
+        double price = helper.getDouble(priceField.getText(), "Price field");
+        int inStock = helper.getInt(invField.getText(), "Inv field");
+        int min = helper.getInt(minField.getText(), "Min field");
+        int max = helper.getInt(maxField.getText(), "Max field");
+        helper.invLevelsHandler(inStock, max, min);
                                                
-        if (validInput) {
+        if (helper.getValidInput()) {
             Product product = new Product(associatedParts, productID, name, price, inStock, min, max);
             inv.addProduct(product);
             
             Stage stage = (Stage) saveButton.getScene().getWindow();
             helper.nextScreenHandler(stage, "MainScreen.fxml");
         }
-    }
-    
-    public int getProductID() {
-        int productID = 0;
-        try { productID = Integer.parseInt(IDField.getText()); }
-        catch(Exception e) { validInput = helper.IOExceptionHandler("Product ID field"); }
-        return productID;
-    }
-    
-    public String getName() {
-        //Displays a warning dialog if field is empty
-        boolean tmp;
-        tmp = helper.emptyStringHandler(nameField.getText(), "Name field");
-        if (!tmp) { validInput = false; }
-        return nameField.getText();
-    }    
-    
-    public int getInStock() {
-        int inStock = 0;
-        try { inStock = Integer.parseInt(invField.getText()); }
-        catch(Exception e) { validInput = helper.IOExceptionHandler("Inv field"); }
-        return inStock;
-    }
-    
-    public double getPrice() {
-        double price = 0.0;
-        try { price = Double.parseDouble(priceField.getText()); }
-        catch(Exception e) { validInput = helper.IOExceptionHandler("Price field"); }
-        return price;
-    }
-    
-    public int getMax() {
-        int max = 0;
-        try { max = Integer.parseInt(maxField.getText()); }
-        catch(Exception e) { validInput = helper.IOExceptionHandler("Max field"); }
-        return max;
-    }
-    
-    public int getMin() {
-        int min = 0;
-        try { min = Integer.parseInt(minField.getText()); }
-        catch(Exception e) { validInput = helper.IOExceptionHandler("Min field"); }
-        return min;
-    }
-    
-    public void checkInvLevels(int inStock, int max, int min) {
-        boolean tmp;
-        tmp = helper.invLevelsHandler(inStock, max, min);
-        if (!tmp) { validInput = false; }
     }
 }

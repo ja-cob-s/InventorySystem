@@ -15,10 +15,24 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
 /**
- *
+ * The purpose of this class is to handle tasks common to all screen controllers
+ * as to avoid writing redundant code for each screen controller
  * @author jnsch
  */
 public class ScreenHelper {
+    private boolean validInput; //Flag set to false if any field is invalid
+    
+    public ScreenHelper() {
+        validInput = true;
+    }
+    
+    public void setValidInput(boolean b) {
+        validInput = b;
+    }
+    
+    public boolean getValidInput() {
+        return validInput;
+    }
     
     public boolean showConfirmationDialog(String s) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -45,11 +59,12 @@ public class ScreenHelper {
     }
     
     public boolean IOExceptionHandler(String s) {
-        showWarningDialog("Invalid input type in " + s);
+        this.showWarningDialog("Invalid input type in " + s);
         return false;
     }
     
     public void nextScreenHandler(Stage stage, String s) throws IOException {
+        //Loads the next screen
         Parent root;   
         FXMLLoader loader = new FXMLLoader(getClass().getResource(s));
         root = loader.load();
@@ -59,6 +74,7 @@ public class ScreenHelper {
     }
     
     public Object nextScreenControllerHandler(Stage stage, String s) throws IOException {
+        //Loads the next screen but also passes an object to the next screen
         Parent root;   
         FXMLLoader loader = new FXMLLoader(getClass().getResource(s));
         root = loader.load();
@@ -70,33 +86,55 @@ public class ScreenHelper {
     }
     
     public boolean emptyStringHandler (String s, String field) {
+        //Checks if string is empty and displays error if so
         String nullString = null;
         String empty = "";
         
         if (s.equals(nullString) || s.equals(empty)) {
-            showWarningDialog(field + " cannot be empty!");
+            this.showWarningDialog(field + " cannot be empty!");
             return false;
         } else {
             return true;
         }
     }
     
-    public boolean invLevelsHandler (int inStock, int max, int min) {
+    public void invLevelsHandler (int inStock, int max, int min) {
         boolean tmp = true;
         
         if (inStock > max || inStock < min) {
-            showWarningDialog("In Stock level must be between Min and Max!");
+            this.showWarningDialog("In Stock level must be between Min and Max!");
             tmp = false;
-        } 
+        } //Checked if inStock between min and max
         if (min < 0) {
-            showWarningDialog("Min cannot be negative!");
+            this.showWarningDialog("Min cannot be negative!");
             tmp = false;
-        } 
+        } //Checked if min is negative value
         if (min > max) {
-            showWarningDialog("Min must be less than Max!");
+            this.showWarningDialog("Min must be less than Max!");
             tmp = false;
-        }
+        } //Checked if min < max, max > min
         
-        return tmp;
+        if(!tmp) { this.setValidInput(tmp); }
+    }
+    
+    public int getInt(String s, String IOExceptionText) {
+        int i = 0;
+        try { i = Integer.parseInt(s); }
+        catch(Exception e) { this.setValidInput(IOExceptionHandler(IOExceptionText)); }
+        return i;
+    }
+    
+    public double getDouble(String s, String IOExceptionText) {
+        double d = 0;
+        try { d = Double.parseDouble(s); }
+        catch(Exception e) { this.setValidInput(IOExceptionHandler(IOExceptionText)); }
+        return d;
+    }
+    
+    public String getString(String s, String IOExceptionText) {
+        boolean tmp;
+        tmp = emptyStringHandler(s, IOExceptionText);
+        if (!tmp) { this.setValidInput(false); }
+        return s;
     }
 }

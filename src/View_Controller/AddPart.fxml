@@ -7,11 +7,11 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="addInhousePartScreenAnchor" prefHeight="550.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View_Controller.AddInhousePartController">
+<AnchorPane id="AnchorPane" fx:id="addPartScreenAnchor" prefHeight="550.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View_Controller.AddPartController">
    <children>
-      <AnchorPane fx:id="addInhousePartAnchor" layoutX="12.0" layoutY="12.0" prefHeight="525.0" prefWidth="425.0" style="-fx-border-color: black; -fx-border-radius: 10;">
+      <AnchorPane fx:id="addPartAnchor" layoutX="12.0" layoutY="12.0" prefHeight="525.0" prefWidth="425.0" style="-fx-border-color: black; -fx-border-radius: 10;">
          <children>
-            <Label fx:id="addInhousePartLabel" layoutX="24.0" layoutY="30.0" text="Add Part" textFill="#445570">
+            <Label fx:id="addPartLabel" layoutX="24.0" layoutY="30.0" text="Add Part" textFill="#445570">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
@@ -41,7 +41,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <Label fx:id="machineIDLabel" layoutX="50.0" layoutY="390.0" text="Machine ID">
+            <Label fx:id="variableLabel" layoutX="50.0" layoutY="390.0" text="Machine ID">
                <font>
                   <Font size="14.0" />
                </font>
@@ -71,7 +71,7 @@
                   <Font name="System Italic" size="12.0" />
                </font>
             </TextField>
-            <TextField fx:id="machineIDField" layoutX="160.0" layoutY="390.0" prefWidth="140.0" promptText="Machine ID">
+            <TextField fx:id="variableField" layoutX="160.0" layoutY="390.0" prefWidth="140.0" promptText="Machine ID">
                <font>
                   <Font name="System Italic" size="12.0" />
                </font>

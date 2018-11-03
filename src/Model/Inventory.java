@@ -25,7 +25,7 @@ public class Inventory {
     
     public void addProduct(Product selectedProduct) {
         products.add(selectedProduct);
-        incrementProductsCnt();
+        this.incrementProductsCnt();
     }
     
     public boolean removeProduct(int productIndex) {
@@ -36,13 +36,13 @@ public class Inventory {
         return products.get(productIndex);
     }
     
-    public void updateProduct(int productIndex) {
-        // ***TO-DO: Complete method***
+    public void updateProduct(int productID) {
+        //Method not utilized
     }
     
     public void addPart(Part selectedPart) {
         allParts.add(selectedPart);
-        incrementPartsCnt();
+        this.incrementPartsCnt();
     }
     
     public boolean deletePart(Part selectedPart) {
@@ -53,8 +53,8 @@ public class Inventory {
         return allParts.get(partIndex);
     }
     
-    public void updatePart(int partIndex) {
-        // ***TO-DO: Complete method***
+    public void updatePart(int partID) {
+        //Method not utilized
     }
     
     public int getPartsCnt() {

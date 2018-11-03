@@ -12,20 +12,17 @@ import Model.Part;
 import Model.Product;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.text.NumberFormat;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -119,21 +116,53 @@ public class MainScreenController implements Initializable {
             entered = true;
         }
         
+        this.populatePartsTable(inv.getAllParts());
+        this.populateProductsTable(inv.getProducts());
+    }    
+    
+    public void populatePartsTable(ObservableList<Part> list) {
         partIDColumn.setCellValueFactory(new PropertyValueFactory<>("partID"));
         partNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         partsInventoryLevelColumn.setCellValueFactory(new PropertyValueFactory<>("inStock"));
         partsPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
         
-        partsTable.setItems(inv.getAllParts());
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+        partsPriceColumn.setCellFactory(tc -> new TableCell<Part, Double>() {
+            @Override
+            protected void updateItem(Double price, boolean empty) {
+                super.updateItem(price, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(currencyFormat.format(price));
+                }
+            }
+        });
         
+        partsTable.setItems(list);
+    }
+    
+    public void populateProductsTable(ObservableList<Product> list) {
         productIDColumn.setCellValueFactory(new PropertyValueFactory<>("productID"));
         productNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         productsInventoryLevelColumn.setCellValueFactory(new PropertyValueFactory<>("inStock"));
         productsPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
         
-        productsTable.setItems(inv.getProducts());
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+        productsPriceColumn.setCellFactory(tc -> new TableCell<Product, Double>() {
+            @Override
+            protected void updateItem(Double price, boolean empty) {
+                super.updateItem(price, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(currencyFormat.format(price));
+                }
+            }
+        });
         
-    }    
+        productsTable.setItems(list);
+    }
 
     @FXML
     private void exitButtonHandler(ActionEvent event) {
@@ -148,6 +177,41 @@ public class MainScreenController implements Initializable {
     @FXML
     private void partsSearchButtonHandler(ActionEvent event) {
         //Searches for user input within parts list when partsSearchButton pressed
+        String searchItem = partsSearchField.getText();
+        ObservableList<Part> filteredParts = FXCollections.observableArrayList();
+        boolean found = false;
+        try {
+            //Searches by ID number
+            int itemNum = Integer.parseInt(searchItem);
+            for (Part p: inv.getAllParts()) {
+                if (p.getPartID() == itemNum) {
+                    found = true;
+                    filteredParts.add(p);
+                    this.populatePartsTable(filteredParts);
+                }
+            }
+            if (found == false) {
+                helper.showWarningDialog("Part not found!");
+            }
+        }
+        catch(NumberFormatException e) {
+            //Displays full list if no search string
+            if (searchItem == null || searchItem.isEmpty()) {
+                this.populatePartsTable(inv.getAllParts());
+                found = true;
+            }
+            //Searches by Name
+            for (Part p: inv.getAllParts()) {
+                if (p.getName().equals(searchItem)) {
+                    found = true;
+                    filteredParts.add(p);
+                    this.populatePartsTable(filteredParts);
+                }
+            }
+            if (found == false) {
+                helper.showWarningDialog("Part not found!");
+            }            
+        }
     }
 
     @FXML
@@ -173,17 +237,15 @@ public class MainScreenController implements Initializable {
             Object part = partsTable.getSelectionModel().getSelectedItem();
             
             Stage stage = (Stage) partsModifyButton.getScene().getWindow();
+            ModifyPartController controller = 
+                        (ModifyPartController)helper.nextScreenControllerHandler(stage, "ModifyPart.fxml");
 
             if (partsTable.getSelectionModel().getSelectedItem() instanceof InhousePart) {
                 //Part is an Inhouse Part
-                ModifyInhousePartController controller = 
-                        (ModifyInhousePartController)helper.nextScreenControllerHandler(stage, "ModifyInhousePart.fxml");
                 controller.setPart((InhousePart)part);
             }
             else {
                 //Part is an Outsourced Part
-                ModifyOutsourcedPartController controller = 
-                        (ModifyOutsourcedPartController)helper.nextScreenControllerHandler(stage, "ModifyOutsourcedPart.fxml");
                 controller.setPart((OutsourcedPart)part);
             }
         }
@@ -193,12 +255,47 @@ public class MainScreenController implements Initializable {
     private void partsAddButtonHandler(ActionEvent event) throws IOException {
         //Switches to AddPart screen when partsAddButton pressed
         Stage stage = (Stage) partsAddButton.getScene().getWindow(); 
-        helper.nextScreenHandler(stage, "AddInhousePart.fxml");
+        helper.nextScreenHandler(stage, "AddPart.fxml");
     }
 
     @FXML
     private void productsSearchButtonHandler(ActionEvent event) {
-        //Searches for user input within products list when productssSearchButton pressed
+        //Searches for user input within products list when productsSearchButton pressed
+        String searchItem = productsSearchField.getText();
+        ObservableList<Product> filteredProducts = FXCollections.observableArrayList();
+        boolean found = false;
+        try {
+            //Searches by ID number
+            int itemNum = Integer.parseInt(searchItem);
+            for (Product p: inv.getProducts()) {
+                if (p.getProductID() == itemNum) {
+                    found = true;
+                    filteredProducts.add(p);
+                    this.populateProductsTable(filteredProducts);
+                }
+            }
+            if (found == false) {
+                helper.showWarningDialog("Product not found!");
+            }
+        }
+        catch(NumberFormatException e) {
+            //Displays full list if no search string
+            if (searchItem == null || searchItem.isEmpty()) {
+                this.populateProductsTable(inv.getProducts());
+                found = true;
+            }
+            //Searches by Name
+            for (Product p: inv.getProducts()) {
+                if (p.getName().equals(searchItem)) {
+                    found = true;
+                    filteredProducts.add(p);
+                    this.populateProductsTable(filteredProducts);
+                }
+            }
+            if (found == false) {
+                helper.showWarningDialog("Product not found!");
+            }            
+        }
     }
 
     @FXML

@@ -7,11 +7,11 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="addOutsourcedPartScreenAnchor" prefHeight="550.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View_Controller.AddOutsourcedPartController">
+<AnchorPane id="AnchorPane" fx:id="modifyPartScreenAnchor" prefHeight="550.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View_Controller.ModifyPartController">
    <children>
-      <AnchorPane fx:id="addOutsourcedPartAnchor" layoutX="12.0" layoutY="12.0" prefHeight="525.0" prefWidth="425.0" style="-fx-border-color: black; -fx-border-radius: 10;">
+      <AnchorPane fx:id="modifyPartAnchor" layoutX="12.0" layoutY="12.0" prefHeight="525.0" prefWidth="425.0" style="-fx-border-color: black; -fx-border-radius: 10;">
          <children>
-            <Label fx:id="addOutsourcedPartLabel" layoutX="24.0" layoutY="30.0" text="Add Part" textFill="#445570">
+            <Label fx:id="modifyPartLabel" layoutX="24.0" layoutY="30.0" text="Modify Part" textFill="#445570">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
@@ -41,7 +41,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <Label fx:id="companyNameLabel" layoutX="50.0" layoutY="390.0" text="Company Name">
+            <Label fx:id="variableLabel" layoutX="50.0" layoutY="390.0" text="Machine ID">
                <font>
                   <Font size="14.0" />
                </font>
@@ -61,7 +61,7 @@
                   <Font name="System Italic" size="12.0" />
                </font>
             </TextField>
-            <TextField fx:id="invField" layoutX="160.0" layoutY="210.0" prefWidth="140.0" promptText="Inv" text="0">
+            <TextField fx:id="invField" layoutX="160.0" layoutY="210.0" prefWidth="140.0" promptText="Inv">
                <font>
                   <Font name="System Italic" size="12.0" />
                </font>
@@ -71,7 +71,7 @@
                   <Font name="System Italic" size="12.0" />
                </font>
             </TextField>
-            <TextField fx:id="companyNameField" layoutX="160.0" layoutY="390.0" prefWidth="140.0" promptText="Company Name">
+            <TextField fx:id="variableField" layoutX="160.0" layoutY="390.0" prefWidth="140.0" promptText="Machine ID">
                <font>
                   <Font name="System Italic" size="12.0" />
                </font>
@@ -88,12 +88,12 @@
             </TextField>
             <Button fx:id="cancelButton" layoutX="322.0" layoutY="469.0" mnemonicParsing="false" onAction="#cancelButtonHandler" prefHeight="32.0" prefWidth="72.0" text="Cancel" />
             <Button fx:id="saveButton" layoutX="236.0" layoutY="469.0" mnemonicParsing="false" onAction="#saveButtonHandler" prefHeight="32.0" prefWidth="72.0" text="Save" />
-            <RadioButton fx:id="inHouseRadio" layoutX="145.0" layoutY="35.0" mnemonicParsing="false" onAction="#inHouseRadioHandler" text="In-House">
+            <RadioButton fx:id="inHouseRadio" layoutX="145.0" layoutY="35.0" mnemonicParsing="false" onAction="#inHouseRadioHandler" selected="true" text="In-House">
                <font>
                   <Font size="14.0" />
                </font>
             </RadioButton>
-            <RadioButton fx:id="outsourcedRadio" layoutX="250.0" layoutY="35.0" mnemonicParsing="false" onAction="#outsourcedRadioHandler" selected="true" text="Outsourced">
+            <RadioButton fx:id="outsourcedRadio" layoutX="250.0" layoutY="35.0" mnemonicParsing="false" onAction="#outsourcedRadioHandler" text="Outsourced">
                <font>
                   <Font size="14.0" />
                </font>
