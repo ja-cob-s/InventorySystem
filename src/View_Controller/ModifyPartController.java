@@ -56,7 +56,6 @@ public class ModifyPartController implements Initializable {
     private TextField invField;
     @FXML
     private TextField priceField;
-    private TextField machineIDField;
     @FXML
     private TextField maxField;
     @FXML
@@ -69,23 +68,23 @@ public class ModifyPartController implements Initializable {
     private RadioButton inHouseRadio;
     @FXML
     private RadioButton outsourcedRadio;
-    
-    private Inventory inv;
-    private Part part;
-    private ScreenHelper helper;
     @FXML
     private Label variableLabel;
     @FXML
     private TextField variableField;
+    
+    private Inventory inv;
+    private Part part;
+    private ScreenHelper helper;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        //Presets PartID
         inv = new Inventory();
         helper = new ScreenHelper();
+        //Presets PartID
         IDField.setText(Integer.toString(inv.getPartsCnt() + 1));
 
         // Sets togglegroup for radio buttons
@@ -96,8 +95,8 @@ public class ModifyPartController implements Initializable {
 
     @FXML
     private void cancelButtonHandler(ActionEvent event) throws IOException {
-        //Switches to main screen and discards changes when cancelButton pressed
-        //Displays confirmation dialog first
+        /*Switches to main screen and discards changes when cancelButton pressed
+        Displays confirmation dialog first*/
         if (helper.showConfirmationDialog("Are you sure you want to discard changes?")){
             // ... user chose OK
             Stage stage = (Stage) cancelButton.getScene().getWindow();
@@ -116,9 +115,9 @@ public class ModifyPartController implements Initializable {
         int min = helper.getInt(minField.getText(), "Min field");
         int max = helper.getInt(maxField.getText(), "Max field");
         
-        if (part instanceof InhousePart) {
+        if (part instanceof InhousePart) { //Part is an Inhouse Part
             if (outsourcedRadio.isSelected()) {
-                helper.showWarningDialog("Cannot convert Inhouse Part to Outsourced Part!");
+                helper.showWarningDialog("Cannot convert Inhouse Part to Outsourced Part.");
                 helper.setValidInput(false);
             }
             int machineID = helper.getInt(variableField.getText(), "Machine ID field");
@@ -134,9 +133,9 @@ public class ModifyPartController implements Initializable {
                 Stage stage = (Stage) saveButton.getScene().getWindow();
                 helper.nextScreenHandler(stage, "MainScreen.fxml");
             }
-        } else if (part instanceof OutsourcedPart) {
+        } else if (part instanceof OutsourcedPart) { //Part is an Outsourced Part
             if (inHouseRadio.isSelected()) {
-                helper.showWarningDialog("Cannot convert Outsourced Part to Inhouse Part!");
+                helper.showWarningDialog("Cannot convert Outsourced Part to Inhouse Part.");
                 helper.setValidInput(false);
             }
             String companyName = helper.getString(variableField.getText(), "Company Name field");
@@ -190,6 +189,7 @@ public class ModifyPartController implements Initializable {
         priceField.setText(Double.toString(part.getPrice()));
         maxField.setText(Integer.toString(part.getMax()));
         minField.setText(Integer.toString(part.getMin()));
+        
         /*Sets either Machine ID or Company Name if part is an 
           Inhouse Part or Outsourced Part, respectively*/
         if (part instanceof InhousePart) {

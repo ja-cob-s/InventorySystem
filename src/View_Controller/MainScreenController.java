@@ -16,7 +16,6 @@ import java.text.NumberFormat;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -92,9 +91,9 @@ public class MainScreenController implements Initializable {
     @FXML
     private Button productsAddButton;
     
-    static boolean entered;
+    //static boolean entered; //Only used in conjunction with sample test data
     private Inventory inv;
-    private ScreenHelper helper;
+    private ScreenHelper helper; //Handles tasks common to all screens
 
     /**
      * Initializes the controller class.
@@ -105,7 +104,8 @@ public class MainScreenController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         inv = new Inventory();
         helper = new ScreenHelper();
-            
+        
+        /***Sample data for testing purposes only**
         if(!entered) {
             inv.addProduct(new Product());
             inv.addProduct(new Product());
@@ -115,6 +115,7 @@ public class MainScreenController implements Initializable {
             inv.addPart(new OutsourcedPart());
             entered = true;
         }
+        */
         
         this.populatePartsTable(inv.getAllParts());
         this.populateProductsTable(inv.getProducts());
@@ -125,7 +126,7 @@ public class MainScreenController implements Initializable {
         partNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         partsInventoryLevelColumn.setCellValueFactory(new PropertyValueFactory<>("inStock"));
         partsPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
-        
+        //Format Price as currency
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
         partsPriceColumn.setCellFactory(tc -> new TableCell<Part, Double>() {
             @Override
@@ -147,7 +148,7 @@ public class MainScreenController implements Initializable {
         productNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         productsInventoryLevelColumn.setCellValueFactory(new PropertyValueFactory<>("inStock"));
         productsPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
-        
+        //Format price as currency
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
         productsPriceColumn.setCellFactory(tc -> new TableCell<Product, Double>() {
             @Override
@@ -191,7 +192,7 @@ public class MainScreenController implements Initializable {
                 }
             }
             if (found == false) {
-                helper.showWarningDialog("Part not found!");
+                helper.showWarningDialog("Part not found.");
             }
         }
         catch(NumberFormatException e) {
@@ -209,7 +210,7 @@ public class MainScreenController implements Initializable {
                 }
             }
             if (found == false) {
-                helper.showWarningDialog("Part not found!");
+                helper.showWarningDialog("Part not found.");
             }            
         }
     }
@@ -275,7 +276,7 @@ public class MainScreenController implements Initializable {
                 }
             }
             if (found == false) {
-                helper.showWarningDialog("Product not found!");
+                helper.showWarningDialog("Product not found.");
             }
         }
         catch(NumberFormatException e) {
@@ -293,7 +294,7 @@ public class MainScreenController implements Initializable {
                 }
             }
             if (found == false) {
-                helper.showWarningDialog("Product not found!");
+                helper.showWarningDialog("Product not found.");
             }            
         }
     }
@@ -307,7 +308,13 @@ public class MainScreenController implements Initializable {
             if (helper.showConfirmationDialog("Are you sure you want to delete this product?")){
                 // ... user chose OK
                 Product product = productsTable.getSelectionModel().getSelectedItem();
-                inv.removeProduct(inv.getProductIndex(product));
+                //Product cannot be deleted if associated with at least one part
+                if (!product.getAssociatedParts().isEmpty()) {
+                    helper.showWarningDialog("This product is associated with " + 
+                            product.getAssociatedParts().size() + " part(s) and cannot be deleted.");
+                } else {
+                    inv.removeProduct(inv.getProductIndex(product));
+                }
             } else {
                 // ... user chose CANCEL or closed the dialog
             }    

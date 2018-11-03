@@ -8,7 +8,6 @@ package View_Controller;
 import Model.InhousePart;
 import Model.Inventory;
 import Model.OutsourcedPart;
-import Model.Part;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -56,7 +55,6 @@ public class AddPartController implements Initializable {
     private TextField invField;
     @FXML
     private TextField priceField;
-    private TextField machineIDField;
     @FXML
     private TextField maxField;
     @FXML
@@ -69,23 +67,22 @@ public class AddPartController implements Initializable {
     private RadioButton inHouseRadio;
     @FXML
     private RadioButton outsourcedRadio;
-    
-    private Inventory inv;
-    private Part part;
-    private ScreenHelper helper;
     @FXML
     private Label variableLabel;
     @FXML
     private TextField variableField;
+    
+    private Inventory inv;
+    private ScreenHelper helper;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        //Presets PartID
         inv = new Inventory();
         helper = new ScreenHelper();
+        //Presets PartID
         IDField.setText(Integer.toString(inv.getPartsCnt() + 1));
 
         // Sets togglegroup for radio buttons
@@ -96,8 +93,8 @@ public class AddPartController implements Initializable {
 
     @FXML
     private void cancelButtonHandler(ActionEvent event) throws IOException {
-        //Switches to main screen and discards changes when cancelButton pressed
-        //Displays confirmation dialog first
+        /*Switches to main screen and discards changes when cancelButton pressed
+          Displays confirmation dialog first*/
         if (helper.showConfirmationDialog("Are you sure you want to discard changes?")){
             // ... user chose OK
             Stage stage = (Stage) cancelButton.getScene().getWindow();
@@ -116,7 +113,7 @@ public class AddPartController implements Initializable {
         int min = helper.getInt(minField.getText(), "Min field");
         int max = helper.getInt(maxField.getText(), "Max field");
         
-        if (inHouseRadio.isSelected()) {
+        if (inHouseRadio.isSelected()) { //Part is an Inhouse Part
             //Creates a new Inhouse Part
             int machineID = helper.getInt(variableField.getText(), "Machine ID field");
             helper.invLevelsHandler(inStock, max, min);
@@ -126,7 +123,7 @@ public class AddPartController implements Initializable {
                 Stage stage = (Stage) saveButton.getScene().getWindow();
                 helper.nextScreenHandler(stage, "MainScreen.fxml");
             }
-        } else if (outsourcedRadio.isSelected()) {
+        } else if (outsourcedRadio.isSelected()) { //Part is an Outsourced Part
             //Creates a new Outsourced Part
             String companyName = helper.getString(variableField.getText(), "Company Name field");
             helper.invLevelsHandler(inStock, max, min);

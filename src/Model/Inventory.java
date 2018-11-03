@@ -14,10 +14,10 @@ import javafx.collections.ObservableList;
  */
 public class Inventory {
     
-    public static ObservableList<Product> products = FXCollections.observableArrayList();
-    public static ObservableList<Part> allParts = FXCollections.observableArrayList();
-    private static int productsCnt;
-    private static int partsCnt;
+    private static ObservableList<Product> products = FXCollections.observableArrayList();
+    private static ObservableList<Part> allParts = FXCollections.observableArrayList();
+    private static int productsCnt; //Keeps track of Product IDs that have been used, even if Product is deleted
+    private static int partsCnt; //Keeps track of Part IDs that have been used, even if Part is deleted
     
     public Inventory() {
 

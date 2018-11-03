@@ -91,7 +91,7 @@ public class ScreenHelper {
         String empty = "";
         
         if (s.equals(nullString) || s.equals(empty)) {
-            this.showWarningDialog(field + " cannot be empty!");
+            this.showWarningDialog(field + " cannot be empty.");
             return false;
         } else {
             return true;
@@ -102,15 +102,15 @@ public class ScreenHelper {
         boolean tmp = true;
         
         if (inStock > max || inStock < min) {
-            this.showWarningDialog("In Stock level must be between Min and Max!");
+            this.showWarningDialog("In Stock level must be between Min and Max.");
             tmp = false;
         } //Checked if inStock between min and max
         if (min < 0) {
-            this.showWarningDialog("Min cannot be negative!");
+            this.showWarningDialog("Min cannot be negative.");
             tmp = false;
         } //Checked if min is negative value
         if (min > max) {
-            this.showWarningDialog("Min must be less than Max!");
+            this.showWarningDialog("Min must be less than Max.");
             tmp = false;
         } //Checked if min < max, max > min
         

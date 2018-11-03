@@ -119,11 +119,12 @@ public class AddProductController implements Initializable {
     }    
     
     public void populatePartTable1(ObservableList<Part> list) {
+        //Populates table of all parts
         partIDColumn1.setCellValueFactory(new PropertyValueFactory<>("partID"));
         partNameColumn1.setCellValueFactory(new PropertyValueFactory<>("name"));
         inventoryLevelColumn1.setCellValueFactory(new PropertyValueFactory<>("inStock"));
         priceColumn1.setCellValueFactory(new PropertyValueFactory<>("price"));
-        
+        //Formats price as currency
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
         priceColumn1.setCellFactory(tc -> new TableCell<Part, Double>() {
             @Override
@@ -141,11 +142,12 @@ public class AddProductController implements Initializable {
     }
     
     public void populatePartTable2(ObservableList<Part> list) {
+        //Populates table of associated parts
         partIDColumn2.setCellValueFactory(new PropertyValueFactory<>("partID"));
         partNameColumn2.setCellValueFactory(new PropertyValueFactory<>("name"));
         inventoryLevelColumn2.setCellValueFactory(new PropertyValueFactory<>("inStock"));
         priceColumn2.setCellValueFactory(new PropertyValueFactory<>("price"));
-        
+        //Formats price as currency
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
         priceColumn2.setCellFactory(tc -> new TableCell<Part, Double>() {
             @Override
@@ -179,7 +181,7 @@ public class AddProductController implements Initializable {
                 }
             }
             if (found == false) {
-                helper.showWarningDialog("Part not found!");
+                helper.showWarningDialog("Part not found.");
             }
         }
         catch(NumberFormatException e) {
@@ -197,7 +199,7 @@ public class AddProductController implements Initializable {
                 }
             }
             if (found == false) {
-                helper.showWarningDialog("Part not found!");
+                helper.showWarningDialog("Part not found.");
             }            
         }
     }
@@ -223,8 +225,8 @@ public class AddProductController implements Initializable {
 
     @FXML
     private void cancelButtonHandler(ActionEvent event) throws IOException {
-        //Switches to main screen and discards changes when cancelButton pressed
-        //Displays confirmation dialog first
+        /*Switches to main screen and discards changes when cancelButton pressed
+          Displays confirmation dialog first*/
         if (helper.showConfirmationDialog("Are you sure you want to discard changes?")) {
             // ... user chose OK
             Stage stage = (Stage) cancelButton.getScene().getWindow(); 
@@ -236,14 +238,22 @@ public class AddProductController implements Initializable {
     private void saveButtonHandler(ActionEvent event) throws IOException {
         //Adds the product to the inventory and returns to the main screen
         helper.setValidInput(true);
-        ArrayList<Part> associatedParts = new ArrayList<Part>(); //*****--->CHANGE THIS<---*****
+        
+        ArrayList<Part> associatedParts = new ArrayList<Part>(partTable2.getItems());
+        if (associatedParts.isEmpty()) {
+            helper.setValidInput(false);
+            helper.showWarningDialog("Product must have at least one part.");
+        }
+        
         String name = helper.getString(nameField.getText(), "Name field");
         int productID = helper.getInt(IDField.getText(), "Product ID field");
         double price = helper.getDouble(priceField.getText(), "Price field");
         int inStock = helper.getInt(invField.getText(), "Inv field");
         int min = helper.getInt(minField.getText(), "Min field");
         int max = helper.getInt(maxField.getText(), "Max field");
+        
         helper.invLevelsHandler(inStock, max, min);
+        this.priceHandler(price);
                                                
         if (helper.getValidInput()) {
             Product product = new Product(associatedParts, productID, name, price, inStock, min, max);
@@ -251,6 +261,18 @@ public class AddProductController implements Initializable {
             
             Stage stage = (Stage) saveButton.getScene().getWindow();
             helper.nextScreenHandler(stage, "MainScreen.fxml");
+        }
+    }
+    
+    public void priceHandler(Double price) {
+        double totalPartsPrice = 0.0;
+        
+        for (int i = 0; i < associatedParts.size(); i++) {
+            totalPartsPrice = totalPartsPrice + associatedParts.get(i).getPrice();
+        }
+        if (price < totalPartsPrice) {
+            helper.showWarningDialog("Product price cannot be less than total price of associated parts.");
+            helper.setValidInput(false); //Fails check if product price is less than total parts price
         }
     }
 }

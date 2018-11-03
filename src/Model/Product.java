@@ -113,7 +113,12 @@ public class Product {
         return productID;
     }
     
-    public int getNumAssociatedParts() {
-        return associatedParts.size();
+    public ArrayList<Part> getAssociatedParts() {
+        return associatedParts;
     }
+    
+    public void setAssociatedParts(ArrayList<Part> associatedParts) {
+        this.associatedParts = associatedParts;
+    }
+    
 }
