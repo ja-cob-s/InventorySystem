@@ -1,8 +1,3 @@
-This was a project for my bachelor's program
+Project for my BSCS program. Scenario was presented as follows: "You are working for a small manufacturing organization that has outgrown its current inventory system. They have been using a spreadsheet program to manually enter inventory additions, deletions, and other data from a paper-based system but would now like you to develop a more sophisticated inventory program."
 
-The instructions given for the project were as follows:
-
-SCENARIO
-You are working for a small manufacturing organization that has outgrown its current inventory system. They have been using a spreadsheet program to manually enter inventory additions, deletions, and other data from a paper-based system but would now like you to develop a more sophisticated inventory program.
-
-They have provided you with a mock-up of the user interface to use in the design and development of the system and a class diagram to assist you in your work. The organization also has specific business requirements that must be included as part of the application. A system analyst from your company created the solution statements outlined in the requirements section based on the manufacturing organization’s business requirements. You will use these solution statements to develop your application.
+Program was built in JavaFX with GUI functionality with the ability to add, remove, and modify products from inventory. Products are associated with parts that can also be added, removed, or modified. Inventory levels and prices of parts and products can be adjusted and tracked. GUI has multiple screens and objects are passed from one screen to another.
